@@ -1,42 +1,49 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("allegationForm");
-  const input = document.getElementById("allegationInput");
-  const list = document.getElementById("allegationList");
+let allegations = JSON.parse(localStorage.getItem('allegations')) || [];
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
+function saveToLocalStorage() {
+  localStorage.setItem('allegations', JSON.stringify(allegations));
+}
 
-    const text = input.value.trim();
-    if (text !== "") {
-      addAllegation(text);
-      input.value = "";
-    }
-  });
+function renderAllegations() {
+  const list = document.getElementById('allegationList');
+  list.innerHTML = '';
 
-  function addAllegation(text) {
-    const li = document.createElement("li");
-
-    const span = document.createElement("span");
-    span.textContent = text;
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "মুছুন";
-    deleteBtn.onclick = () => li.remove();
-
-    const editBtn = document.createElement("button");
-    editBtn.textContent = "সম্পাদনা";
-    editBtn.classList.add("edit-btn");
-    editBtn.onclick = () => {
-      const newText = prompt("অভিযোগ পরিবর্তন করুন:", span.textContent);
-      if (newText !== null && newText.trim() !== "") {
-        span.textContent = newText.trim();
-      }
-    };
-
-    li.appendChild(span);
-    li.appendChild(editBtn);
-    li.appendChild(deleteBtn);
-
+  allegations.forEach((text, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      ${text}
+      <button class="edit-btn" onclick="editAllegation(${index})">সম্পাদনা</button>
+      <button onclick="deleteAllegation(${index})">মুছে ফেলুন</button>
+    `;
     list.appendChild(li);
+  });
+}
+
+function addAllegation() {
+  const input = document.getElementById('allegationInput');
+  const text = input.value.trim();
+  if (text !== '') {
+    allegations.push(text);
+    saveToLocalStorage();
+    input.value = '';
+    renderAllegations();
   }
-});
+}
+
+function deleteAllegation(index) {
+  allegations.splice(index, 1);
+  saveToLocalStorage();
+  renderAllegations();
+}
+
+function editAllegation(index) {
+  const newText = prompt('নতুন অভিযোগ লিখুন:', allegations[index]);
+  if (newText !== null && newText.trim() !== '') {
+    allegations[index] = newText.trim();
+    saveToLocalStorage();
+    renderAllegations();
+  }
+}
+
+// Initial rendering
+renderAllegations();
