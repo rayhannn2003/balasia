@@ -4,6 +4,7 @@ function saveToLocalStorage() {
   localStorage.setItem('allegations', JSON.stringify(allegations));
 }
 
+
 function renderAllegations() {
   const list = document.getElementById('allegationList');
   list.innerHTML = '';
